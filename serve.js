@@ -36,7 +36,7 @@ var _ALL_THENS       = _PUBLIC_THENS.concat(_PROTECTED_THENS);
 /user1/profile.json
 /user1/following.json
 /user1/posts.json
-/user1/timeline.json TODO
+/user1/timeline.json
 
 /user1/post?secret=pass1&content=hello%20world
 /user1/delete?secret=pass1&post_created_at=1430755086024
