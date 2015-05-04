@@ -37,9 +37,9 @@ var _ALL_THENS       = _PUBLIC_THENS.concat(_PROTECTED_THENS);
 /user1/delete?secret=pass1&post_created_at=1430755086024
 /user1/follow?secret=pass1&target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
 /user1/unfollow?secret=pass1&target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
-/user1/profile?secret=pass1&name=User1&description=the%20world%20is%20a%20vampire
+/user1/profile?secret=pass3&name=User%203&description=things%20and%20stuff
 /user3/new?secret=pass3
-/user1/secret?secret=pass1&new_secret=pass11 TODO
+/user1/secret?secret=pass1&new_secret=pass11
 */
 
 
@@ -208,10 +208,14 @@ var s = http.createServer(function(req, res) {
             else { throw 'FIELDS MISSING: target_user'; }
         }
         else if (then === _profile) {
-            throw 'TODO';
+            fs.writeFileSync(user+'/profile.json', JSON.stringify(params)); // TODO old params could stick if not passed, deleted if null passed
         }
         else if (then === _secret) {
-            throw 'TODO';
+            if ('new_secret' in params) {
+                SECRETS[user] = params['new_secret'];
+                fs.writeFileSync('secrets.json', JSON.stringify(SECRETS));
+            }
+            else { throw 'FIELDS MISSING: new_secret'; }
         }
         else if (then === _timelineJ) {
             throw 'TODO';

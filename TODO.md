@@ -1,6 +1,4 @@
 * serve
-    * edit profile
-    * change secret
     * full timeline
     * timeline update
 * client
