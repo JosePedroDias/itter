@@ -109,6 +109,12 @@ var removeFromCachePropertyWhen = function(user, key, testFn) {
     fs.writeFileSync([user, key].join('/'), arrS);
 };
 
+var fullTimeline = function(user, res) {
+    setTimeout(function() {
+        go(res, '[]');
+    }, 100);
+};
+
 
 // setting up secrets and cache
 (function() {
@@ -218,7 +224,7 @@ var s = http.createServer(function(req, res) {
             else { throw 'FIELDS MISSING: new_secret'; }
         }
         else if (then === _timelineJ) {
-            throw 'TODO';
+            return fullTimeline(user, res);
         }
 		go(res, 'OK');
 	} catch (err) {
