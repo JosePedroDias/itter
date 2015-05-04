@@ -1,8 +1,8 @@
 * serve
     * edit profile
-    * create user
-    * timeline
-    * ranged requests?
+    * change secret
+    * full timeline
+    * timeline update
 * client
     * cache stuff
     * request more posts

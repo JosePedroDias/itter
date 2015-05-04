@@ -35,6 +35,11 @@ public endpoints should support ranged requests
 
 
 	/<itterUsername>
+	
+	    CREATE USER
+	    
+	    /new?secret=my_secret
+	    
 		
 		PUBLIC ENDPOINTS
 		
@@ -50,7 +55,8 @@ public endpoints should support ranged requests
 		/delete?post_created_at=1430755086024
 		/follow?target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
 		/unfollow?target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
-		/profile?secret=pass1&name=User1&description=the%20world%20is%20a%20vampire
+		/profile?name=User1&description=the%20world%20is%20a%20vampire
+		/secret?new_secret=my_new_secret
 
 
 ## TEST MESSY DRAFT

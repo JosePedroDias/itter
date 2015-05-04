@@ -21,9 +21,10 @@ var _delete     = 'delete';
 var _follow     = 'follow';
 var _unfollow   = 'unfollow';
 var _new        = 'new';
+var _secret     = 'secret';
 
 var _PUBLIC_THENS    = [_profileJ, _followingJ, _postsJ, _timelineJ];
-var _PROTECTED_THENS = [_post, _delete, _follow, _unfollow, _profile, _new];
+var _PROTECTED_THENS = [_post, _delete, _follow, _unfollow, _profile, _new, _secret];
 var _ALL_THENS       = _PUBLIC_THENS.concat(_PROTECTED_THENS);
 
 /*
@@ -38,6 +39,7 @@ var _ALL_THENS       = _PUBLIC_THENS.concat(_PROTECTED_THENS);
 /user1/unfollow?secret=pass1&target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
 /user1/profile?secret=pass1&name=User1&description=the%20world%20is%20a%20vampire
 /user3/new?secret=pass3
+/user1/secret?secret=pass1&new_secret=pass11 TODO
 */
 
 
@@ -206,6 +208,9 @@ var s = http.createServer(function(req, res) {
             else { throw 'FIELDS MISSING: target_user'; }
         }
         else if (then === _profile) {
+            throw 'TODO';
+        }
+        else if (then === _secret) {
             throw 'TODO';
         }
         else if (then === _timelineJ) {
