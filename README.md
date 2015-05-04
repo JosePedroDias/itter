@@ -51,3 +51,12 @@ public endpoints should support ranged requests
 		/follow
 		/unfollow
 
+
+## TEST MESSY DRAFT
+
+    python -m SimpleHTTPServer 7777 &
+    node serve.js
+    
+visit endpoints such as: <http://127.0.0.1:9999/user1/posts.json>
+
+visit ux <http://127.0.0.1:6666/ux.html>

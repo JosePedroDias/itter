@@ -9,8 +9,10 @@
     var _post       = 'post';
     var _profile    = 'profile';
 
+    var no_op = function() {};
 
     var ajax = function(o) {
+        if (!o.cb) { o.cb = no_op; }
         var xhr = new XMLHttpRequest();
         xhr.open('GET', o.uri, true);
         if ('range' in o) {
@@ -64,9 +66,7 @@
     };
 
     var getOwnFollowing = function(cb) {
-        if (!this.amILoggedIn()) {
-            return cb('you need to be logged in first!');
-        }
+        if (!this.amILoggedIn()) { return cb('you need to be logged in first!'); }
         this.getFollowing(AUTH.user, cb);
     };
 
@@ -78,21 +78,17 @@
     };
 
     var getOwnPosts = function(cb) {
-        if (!this.amILoggedIn()) {
-            return cb('you need to be logged in first!');
-        }
+        if (!this.amILoggedIn()) { return cb('you need to be logged in first!'); }
         this.getPosts(AUTH.user, cb);
     };
 
-    var post = function(o) {
-        if (!this.amILoggedIn()) {
-            return cb('you need to be logged in first!');
-        }
+    var post = function(o, cb) {
+        if (!this.amILoggedIn()) { return cb('you need to be logged in first!'); }
         o.secret = AUTH.secret;
         ajax({
             uri:       encodeUriParams(AUTH.user + '/' + _post, o),
             skipParse: true,
-            cb :       function(){}
+            cb :       cb
         });
     };
 
@@ -104,9 +100,7 @@
     };
 
     var getOwnTimeline = function(cb) {
-        if (!this.amILoggedIn()) {
-            return cb('you need to be logged in first!');
-        }
+        if (!this.amILoggedIn()) { return cb('you need to be logged in first!'); }
         this.getTimeline(AUTH.user, cb);
     };
 
@@ -118,10 +112,41 @@
     };
 
     var getOwnProfile = function(cb) {
-        if (!this.amILoggedIn()) {
-            return cb('you need to be logged in first!');
-        }
+        if (!this.amILoggedIn()) { return cb('you need to be logged in first!'); }
         this.getProfile(AUTH.user, cb);
+    };
+
+    var setProfile = function(o, cb) {
+        if (!this.amILoggedIn()) { return cb('you need to be logged in first!'); }
+        ajax({
+            uri:       encodeUriParams(AUTH.user + '/' + _profile, o),
+            skipParse: true,
+            cb :       cb
+        });
+    };
+
+    var follow = function(target_user, cb) {
+        ajax({
+            uri:       encodeUriParams(AUTH.user + '/' + _follow, {target_user:target_user}),
+            skipParse: true,
+            cb :       cb
+        });
+    };
+
+    var unfollow = function(target_user, cb) {
+        ajax({
+            uri:       encodeUriParams(AUTH.user + '/' + _unfollow, {target_user:target_user}),
+            skipParse: true,
+            cb :       cb
+        });
+    };
+
+    var del = function(post_created_at, cb) {
+        ajax({
+            uri:       encodeUriParams(AUTH.user + '/' + _delete, {post_created_at:post_created_at}),
+            skipParse: true,
+            cb :       cb
+        });
     };
 
     win.itter = {
@@ -130,21 +155,30 @@
         logOut:          logOut,
         getOwnFollowing: getOwnFollowing,
         getFollowing:    getFollowing,
+        follow:          follow,
+        unfollow:        unfollow,
         getOwnPosts:     getOwnPosts,
         getPosts:        getPosts,
         getOwnTimeline:  getOwnTimeline,
         getTimeline:     getTimeline,
         getOwnProfile:   getOwnProfile,
         getProfile:      getProfile,
-        post:            post
+        setProfile:      setProfile,
+        post:            post,
+        del:             del
     };
 
+
+
+    // TODO TEMP
+    window.i = win.itter;
+    win.log = function() { console.log(arguments); };
+    win.log2 = function(err, o) { if (err) { return console.error(err); } console.log(o); };
+    i.logIn('http://127.0.0.1:9999/user1', 'pass1');
+
     /*
-        var log = function() { console.log(arguments); };
-        var log2 = function(err, o) { if (err) { return console.error(err); } console.log(o); };
-        itter.logIn('http://127.0.0.1:9999/user1', 'pass1')
-        itter.getOwnPosts(log2);
-        itter.getOwnFollowing(log2);
-        itter.post({content:'hello world'});
+        i.getOwnPosts(log2);
+        i.getOwnFollowing(log2);
+        i.post({content:'hello world'});
     */
 })(this);
