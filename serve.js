@@ -20,9 +20,10 @@ var _post       = 'post';
 var _delete     = 'delete';
 var _follow     = 'follow';
 var _unfollow   = 'unfollow';
+var _new        = 'new';
 
 var _PUBLIC_THENS    = [_profileJ, _followingJ, _postsJ, _timelineJ];
-var _PROTECTED_THENS = [_post, _delete, _follow, _unfollow, _profile];
+var _PROTECTED_THENS = [_post, _delete, _follow, _unfollow, _profile, _new];
 var _ALL_THENS       = _PUBLIC_THENS.concat(_PROTECTED_THENS);
 
 /*
@@ -36,6 +37,7 @@ var _ALL_THENS       = _PUBLIC_THENS.concat(_PROTECTED_THENS);
 /user1/follow?secret=pass1&target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
 /user1/unfollow?secret=pass1&target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
 /user1/profile?secret=pass1&name=User1&description=the%20world%20is%20a%20vampire
+/user3/new?secret=pass3
 */
 
 
@@ -64,8 +66,19 @@ var appendToArray = function(arrS, o) {
     var oS = JSON.stringify(o);
     var l = arrS.length;
 	return [ (l>2? arrS.substring(0, l-1) + ',' : '[') , oS, ']'].join('');
-	return arrS;
 };
+
+/*
+ {}
+ {"a":"b"}
+ {"a":"b","c":"d"}
+ */
+/*var appendToObject = function(objS, k, v) {
+    var kS = JSON.stringify(k);
+    var vS = JSON.stringify(v);
+    var l = objS.length;
+    return [ (l>2? objS.substring(0, l-1) + ',' : '{') , kS, ':', vS, '}'].join('');
+};*/
 
 var appendToCacheProperty = function(user, key, o) {
     var arrS = CACHE[user][key];
@@ -104,6 +117,7 @@ var removeFromCachePropertyWhen = function(user, key, testFn) {
 		o[_profileJ  ] = fs.readFileSync( [user, _profileJ  ].join('/') ).toString();
 		o[_followingJ] = fs.readFileSync( [user, _followingJ].join('/') ).toString();
         o[_postsJ]     = fs.readFileSync( [user, _postsJ    ].join('/') ).toString();
+        o[_timelineJ]  = fs.readFileSync( [user, _timelineJ ].join('/') ).toString();
 		CACHE[user] = o;
 	}
 })();
@@ -125,7 +139,7 @@ var s = http.createServer(function(req, res) {
 	}
 	//console.log( JSON.stringify( [user, then, search] ) );
 
-	if (user === '/' || !(user in CACHE) || !elInArr(then, _ALL_THENS)) { // invalid
+	if (user === '/' || (!(user in CACHE) && then !== _new) || !elInArr(then, _ALL_THENS)) { // invalid
 		return go(res, 'INVALID API ENDPOINT: ' + u, 404);
 	}
 
@@ -140,15 +154,33 @@ var s = http.createServer(function(req, res) {
 		params[pair[0]] = decodeURIComponent(pair[1]);
 	});
 	//console.log(params);
-	//return go(res, JSON.stringify(params));
 
-	if (SECRETS[user] !== params.secret) {
+    if (then === _new && SECRETS[user]) {
+        return go(res, 'UNAUTHORIZED ACCESS: user already exists', 403);
+    }
+
+    if (then === _new) {}
+	else if (SECRETS[user] !== params.secret) {
 		return go(res, 'UNAUTHORIZED ACCESS: no secret field or incorrect value', 403);
 	}
-	delete params.secret;
+    else {
+        delete params.secret;
+    }
 
 	try {
-		if (then === _post) {
+        if (then === _new) {
+            if ('secret' in params) {
+                SECRETS[user] = params.secret;
+                fs.writeFileSync('secrets.json', JSON.stringify(SECRETS));
+                fs.mkdirSync(user);
+                fs.writeFileSync(user+'/following.json', '[]');
+                fs.writeFileSync(user+'/posts.json',     '[]');
+                fs.writeFileSync(user+'/profile.json',   '{}');
+                fs.writeFileSync(user+'/timeline.json',  '[]');
+            }
+            else { throw 'FIELDS MISSING: secret'; }
+        }
+		else if (then === _post) {
 			params.created_at = Date.now();
 			if ('content' in params) {
                 appendToCacheProperty(user, _postsJ, params);
@@ -185,5 +217,5 @@ var s = http.createServer(function(req, res) {
 	}
 });
 
-console.log('serving itter endpoints on port %d...', PORT)
+console.log('serving itter endpoints on port %d...', PORT);
 s.listen(PORT);
