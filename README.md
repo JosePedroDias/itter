@@ -37,9 +37,10 @@ public endpoints should support ranged requests
 	/<itterUsername>
 		
 		PUBLIC ENDPOINTS
-
-		/own.json
-		/wall.json
+		
+		/profile.json
+		/posts.json
+		/timeline.json
 		/following.json
 
 
@@ -47,4 +48,6 @@ public endpoints should support ranged requests
 
 		/post
 		/delete
+		/follow
+		/unfollow
 

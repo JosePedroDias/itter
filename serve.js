@@ -1,28 +1,45 @@
+'use strict';
+
 var fs = require('fs');
 var http = require('http');
 
 
 var SECRETS, CACHE = {};
 
-var _o = 'own.json';
-var _f = 'following.json';
+var _secrets   = 'secrets.json';
 
-var _p = 'post';
-var _d = 'delete';
-//var _ff = 'follow';
-//var _uf = 'unfollow';
+var _profile   = 'profile.json';
+var _following = 'following.json';
+var _posts     = 'posts.json';
+var _timeline  = 'timeline.json';
 
-var _ = [_o, _f, _p, _d]; // thens
-var __ = [_o, _f]; // public thens
+var _post     = 'post';
+var _delete   = 'delete';
+var _follow   = 'follow';
+var _unfollow = 'unfollow';
+
+var _PUBLIC_THENS = [_profile, _following, _posts, _timeline];
+var _PROTECTED_THENS = [_post, _delete, _follow, _unfollow];
+var _ALL_THENS = _PUBLIC_THENS.concat(_PROTECTED_THENS);
 
 /*
-/user1/own.json
+/user1/profile.json
 /user1/following.json
+/user1/posts.json
+/user1/timeline.json
+
 /user1/post?secret=pass1&content=hello world
+/user1/delete?secret=pass1&
+/user1/follow?secret=pass1&
+/user1/unfollow?secret=pass1&
 */
 
 
 // aux
+var elInArr = function(el, arr) {
+    return arr.indexOf(el) !== -1;
+}
+
 var go = function(res, content, code) {
 	if (code === undefined) { code = 200; }
 	console.log(code);
@@ -34,7 +51,7 @@ var go = function(res, content, code) {
 	res.end(content);
 };
 
-var append = function(user, key, o) {
+var appendToArray = function(user, key, o) {
 	var arr = JSON.parse( CACHE[user][key] );
 	arr.push(o);
 	var v = JSON.stringify(arr);
@@ -45,12 +62,14 @@ var append = function(user, key, o) {
 
 // setting up secrets and cache
 (function() {
-	var o, secretsS = fs.readFileSync('secrets.json');
+	var o, secretsS = fs.readFileSync(_secrets).toString();
 	SECRETS = JSON.parse(secretsS);
 	for (var user in SECRETS) {
 		o = {};
-		o[_o] = fs.readFileSync( [user, _o].join('/') ).toString();
-		o[_f] = fs.readFileSync( [user, _f].join('/') ).toString();
+		o[_profile  ] = fs.readFileSync( [user, _profile  ].join('/') ).toString();
+		o[_following] = fs.readFileSync( [user, _following].join('/') ).toString();
+        o[_posts]     = fs.readFileSync( [user, _posts    ].join('/') ).toString();
+        //o[_timeline]  = fs.readFileSync( [user, _timeline ].join('/') ).toString();
 		CACHE[user] = o;
 	}
 })();
@@ -72,11 +91,11 @@ var s = http.createServer(function(req, res) {
 	}
 	//console.log( JSON.stringify( [user, then, search] ) );
 
-	if (user === '/' || !(user in CACHE) || _.indexOf(then) === -1) { // invalid
+	if (user === '/' || !(user in CACHE) || !elInArr(then, _ALL_THENS)) { // invalid
 		return go(res, 'INVALID API ENDPOINT', 404);
 	}
 
-	if (__.indexOf(then) !== -1) { // public query
+	if (elInArr(then, _PUBLIC_THENS)) { // public query
 		var o = CACHE[user][then];
 		return go(res, o);
 	}
@@ -95,10 +114,10 @@ var s = http.createServer(function(req, res) {
 	delete params.secret;
 
 	try {
-		if (then === 'post') {
+		if (then === _post) {
 			params.created_at = Date.now();
 			if ('content' in params) {
-				append(user, _o, params);
+                appendToArray(user, _o, params);
 			}
 			else {
 				throw 'FIELDS MISSING';
