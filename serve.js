@@ -3,7 +3,12 @@
 var fs = require('fs');
 var http = require('http');
 
+var request = require('request');
+
+
+
 var PORT = 9999;
+
 
 
 var SECRETS, CACHE = {};
@@ -82,6 +87,9 @@ var appendToArray = function(arrS, o) {
     return [ (l>2? objS.substring(0, l-1) + ',' : '{') , kS, ':', vS, '}'].join('');
 };*/
 
+//DESC
+var byCreatedAt = function(o1, o2) { return o1['created_at'] < o2['created_at']; };
+
 var appendToCacheProperty = function(user, key, o) {
     var arrS = CACHE[user][key];
     //console.log(arrS);
@@ -110,9 +118,27 @@ var removeFromCachePropertyWhen = function(user, key, testFn) {
 };
 
 var fullTimeline = function(user, res) {
-    setTimeout(function() {
-        go(res, '[]');
-    }, 100);
+    var followings = JSON.parse( CACHE[user][_followingJ] );
+    var followingsLeft = followings.length;
+    var items = [];
+    followings.forEach(function(following) {
+        request(following + '/posts.json', function(err, resp, body) {
+            var user = resp.request.href;
+            user = user.substring(0, user.length - 11);
+            //console.log('**', resp.request.href);
+            if (!err) {
+                var theseItems = JSON.parse(body);
+                theseItems.forEach(function(it) { it.from = user; }); // fill items with user param
+                items = items.concat(theseItems);
+            }
+            --followingsLeft;
+
+            if (followingsLeft === 0) {
+                items.sort(byCreatedAt);
+                go(res, JSON.stringify(items));
+            }
+        });
+    });
 };
 
 
@@ -131,7 +157,7 @@ var fullTimeline = function(user, res) {
 })();
 
 
-// ...
+// main loop
 var s = http.createServer(function(req, res) {
 	var u = req.url;
 	console.log('\n' + u);
@@ -152,6 +178,9 @@ var s = http.createServer(function(req, res) {
 	}
 
 	if (elInArr(then, _PUBLIC_THENS)) { // public query
+        if (then === _timelineJ) {
+            return fullTimeline(user, res);
+        }
 		var o = CACHE[user][then];
 		return go(res, o);
 	}
@@ -197,7 +226,8 @@ var s = http.createServer(function(req, res) {
 		}
         else if (then === _delete) {
             if ('post_created_at' in params) {
-                removeFromCachePropertyWhen(user, _postsJ, function(it) { return it['created_at'] == params['post_created_at']; });
+                params['post_created_at'] = parseInt(params['post_created_at'], 10);
+                removeFromCachePropertyWhen(user, _postsJ, function(it) { return it['created_at'] === params['post_created_at']; });
             }
             else { throw 'FIELDS MISSING: post_created_at'; }
         }
@@ -222,9 +252,6 @@ var s = http.createServer(function(req, res) {
                 fs.writeFileSync('secrets.json', JSON.stringify(SECRETS));
             }
             else { throw 'FIELDS MISSING: new_secret'; }
-        }
-        else if (then === _timelineJ) {
-            return fullTimeline(user, res);
         }
 		go(res, 'OK');
 	} catch (err) {

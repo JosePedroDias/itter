@@ -1,0 +1,28 @@
+{
+  "name": "itter",
+  "version": "0.0.1",
+  "description": "__ __   __               \t|__|  |_|  |_.-----.----. \t|  |   _|   _|  -__|   _| \t|__|____|____|_____|__|",
+  "main": "serve.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JosePedroDias/itter.git"
+  },
+  "keywords": [
+    "decentralized",
+    "network",
+    "twitter-clone",
+    "pubsub"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JosePedroDias/itter/issues"
+  },
+  "homepage": "https://github.com/JosePedroDias/itter",
+  "dependencies": {
+    "request": "^2.55.0"
+  }
+}
