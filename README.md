@@ -9,6 +9,7 @@
 Twitter-like network.  
 Decentralized.  
 S-I-M-P-L-E.  
+Everyone can read everything, no private parts.  
 A user is a `domain/itterUsername`.  
 If by any change you need to change domain, notify about the change in a post and optionally redirect the endpoint to the new location.
 
