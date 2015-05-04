@@ -1,5 +1,4 @@
 * serve
-    * follow/unfollow
     * delete
     * create user
     * edit profile

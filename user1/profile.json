@@ -1,1 +1,1 @@
-{"name":"User 1","avatar":"https://secure.gravatar.com/avatar/5aecee0248f70bcbf79c82e8a87a4e78.jpg?s=128&d=https%3A%2F%2Fcodebits.eu%2Flogos%2Fdefaultavatar.jpg","languages":["en","pt"],"description":"lorem ipsum"}
+{"name":"User 1","avatar":"https://secure.gravatar.com/avatar/5aecee0248f70bcbf79c82e8a87a4e78.jpg?s=128&d=https%3A%2F%2Fcodebits.eu%2Flogos%2Fdefaultavatar.jpg","languages":"en,pt","description":"lorem ipsum"}

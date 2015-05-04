@@ -2,11 +2,12 @@
     'use strict';
 
 
-    var _posts     = 'posts.json';
-    var _timeline  = 'timeline.json';
-    var _profile   = 'profile.json';
-    var _following = 'following.json';
-    var _post      = 'post';
+    var _postsJ     = 'posts.json';
+    var _profileJ   = 'profile.json';
+    var _followingJ = 'following.json';
+    var _timelineJ  = 'timeline.json';
+    var _post       = 'post';
+    var _profile    = 'profile';
 
 
     var ajax = function(o) {
@@ -57,7 +58,7 @@
 
     var getFollowing = function(user, cb) {
         ajax({
-            uri: user + '/' + _following,
+            uri: user + '/' + _followingJ,
             cb:  cb
         });
     };
@@ -71,7 +72,7 @@
 
     var getPosts = function(user, cb) {
         ajax({
-            uri: user + '/' + _posts,
+            uri: user + '/' + _postsJ,
             cb:  cb
         });
     };
@@ -97,7 +98,7 @@
 
     var getTimeline = function(user, cb) {
         ajax({
-            uri: user + '/' + _timeline,
+            uri: user + '/' + _timelineJ,
             cb:  cb
         });
     };
@@ -111,7 +112,7 @@
 
     var getProfile = function(user, cb) {
         ajax({
-            uri: user + '/' + _profile,
+            uri: user + '/' + _profileJ,
             cb:  cb
         });
     };
