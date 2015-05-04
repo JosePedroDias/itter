@@ -25,7 +25,7 @@ no followers inward arcs (because we just can't measure that)
 
 any server can serve one or more itter users
 
-all endpoints are GET, stateless
+all endpoints are GET, stateless, with CORS headers  
 
 public endpoints are arrays of objects,
 new items get appended to the back of the array and should never be erased (just marked irrelevant later on)
