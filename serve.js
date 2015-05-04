@@ -33,8 +33,9 @@ var _ALL_THENS       = _PUBLIC_THENS.concat(_PROTECTED_THENS);
 
 /user1/post?secret=pass1&content=hello%20world
 /user1/delete?secret=pass1&post_created_at=1430755086024
-/user1/follow?secret=pass1&target_user=http%3A%2F%2Fstage.sl.pt%2Fuser2
-/user1/unfollow?secret=pass1&target_user=http%3A%2F%2Fstage.sl.pt%2Fuser2
+/user1/follow?secret=pass1&target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
+/user1/unfollow?secret=pass1&target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
+/user1/profile?secret=pass1&name=User1&description=the%20world%20is%20a%20vampire
 */
 
 

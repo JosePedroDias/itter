@@ -46,10 +46,11 @@ public endpoints should support ranged requests
 
 		REQUIRES AUTH (secret string in query string)
 
-		/post
-		/delete
-		/follow
-		/unfollow
+		/post?content=hello%20world
+		/delete?post_created_at=1430755086024
+		/follow?target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
+		/unfollow?target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
+		/profile?secret=pass1&name=User1&description=the%20world%20is%20a%20vampire
 
 
 ## TEST MESSY DRAFT

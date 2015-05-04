@@ -1,7 +1,6 @@
 * serve
-    * delete
-    * create user
     * edit profile
+    * create user
     * timeline
     * ranged requests?
 * client
