@@ -11,27 +11,27 @@ var _secrets   = 'secrets.json';
 var _profile   = 'profile.json';
 var _following = 'following.json';
 var _posts     = 'posts.json';
-var _timeline  = 'timeline.json';
+//var _timeline  = 'timeline.json';
 
 var _post     = 'post';
 var _delete   = 'delete';
 var _follow   = 'follow';
-var _unfollow = 'unfollow';
+//var _unfollow = 'unfollow';
 
-var _PUBLIC_THENS = [_profile, _following, _posts, _timeline];
-var _PROTECTED_THENS = [_post, _delete, _follow, _unfollow];
+var _PUBLIC_THENS = [_profile, _following, _posts/*, _timeline*/];
+var _PROTECTED_THENS = [_post, _delete, _follow/*, _unfollow*/];
 var _ALL_THENS = _PUBLIC_THENS.concat(_PROTECTED_THENS);
 
 /*
 /user1/profile.json
 /user1/following.json
 /user1/posts.json
-/user1/timeline.json
+/user1/timeline.json TODO
 
 /user1/post?secret=pass1&content=hello world
-/user1/delete?secret=pass1&
-/user1/follow?secret=pass1&
-/user1/unfollow?secret=pass1&
+/user1/follow?secret=pass1&target_user=http://stage.sl.pt/user2
+/user1/delete?secret=pass1& TODO
+/user1/unfollow?secret=pass1&target_user=http://stage.sl.pt/user2 TODO
 */
 
 
@@ -51,12 +51,25 @@ var go = function(res, content, code) {
 	res.end(content);
 };
 
-var appendToArray = function(user, key, o) {
-	var arr = JSON.parse( CACHE[user][key] );
-	arr.push(o);
-	var v = JSON.stringify(arr);
-	CACHE[user][key] = v;
-	fs.writeFileSync([user, key].join('/'), v);
+/*
+  []
+  [{}]
+  [{},{}]
+ */
+var appendToArray = function(arrS, o) {
+    var oS = JSON.stringify(o);
+    var l = arrS.length;
+	return [ (l>2? arrS.substring(0, l-1) + ',' : '[') , oS, ']'].join('');
+	return arrS;
+};
+
+var appendToCacheProperty = function(user, key, o) {
+    var arrS = CACHE[user][key];
+    console.log(arrS);
+    arrS = appendToArray(arrS, o);
+    console.log(arrS);
+    CACHE[user][key] = arrS;
+    fs.writeFileSync([user, key].join('/'), arrS);
 };
 
 
@@ -117,12 +130,20 @@ var s = http.createServer(function(req, res) {
 		if (then === _post) {
 			params.created_at = Date.now();
 			if ('content' in params) {
-                appendToArray(user, _o, params);
+                appendToCacheProperty(user, _posts, params);
 			}
 			else {
 				throw 'FIELDS MISSING';
 			}
 		}
+        else if (then === _follow) {
+            if ('target_user' in params) {
+                appendToCacheProperty(user, _posts, params['target_user']);
+            }
+            else {
+                throw 'FIELDS MISSING';
+            }
+        }
 		go(res, 'OK');
 	} catch (err) {
 		go(res, err, 412);
