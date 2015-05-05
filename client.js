@@ -3,6 +3,7 @@
 
 
     var _postsJ     = 'posts.json';
+    var _postJ     = 'post.json';
     var _profileJ   = 'profile.json';
     var _followingJ = 'following.json';
     var _timelineJ  = 'timeline.json';
@@ -49,6 +50,10 @@
         return 'user' in AUTH && 'secret' in AUTH;
     };
 
+    var getMyUser = function() {
+        return AUTH.user;
+    };
+
     var logIn = function(user, secret) {
         AUTH.user   = user;
         AUTH.secret = secret;
@@ -77,12 +82,19 @@
         });
     };
 
+    var getPost = function(user, created_at, cb) {
+        ajax({
+            uri: user + '/' + _postJ + '?created_at=' + created_at,
+            cb:  cb
+        });
+    };
+
     var getOwnPosts = function(cb) {
         if (!this.amILoggedIn()) { return cb('you need to be logged in first!'); }
         this.getPosts(AUTH.user, cb);
     };
 
-    var post = function(o, cb) {
+    var writePost = function(o, cb) {
         if (!this.amILoggedIn()) { return cb('you need to be logged in first!'); }
         o.secret = AUTH.secret;
         ajax({
@@ -141,7 +153,7 @@
         });
     };
 
-    var del = function(post_created_at, cb) {
+    var deletePost = function(post_created_at, cb) {
         ajax({
             uri:       encodeUriParams(AUTH.user + '/' + _delete, {post_created_at:post_created_at}),
             skipParse: true,
@@ -151,6 +163,7 @@
 
     win.itter = {
         amILoggedIn:     amILoggedIn,
+        getMyUser:       getMyUser,
         logIn:           logIn,
         logOut:          logOut,
         getOwnFollowing: getOwnFollowing,
@@ -159,13 +172,14 @@
         unfollow:        unfollow,
         getOwnPosts:     getOwnPosts,
         getPosts:        getPosts,
+        getPost:         getPost,
         getOwnTimeline:  getOwnTimeline,
         getTimeline:     getTimeline,
         getOwnProfile:   getOwnProfile,
         getProfile:      getProfile,
         setProfile:      setProfile,
-        post:            post,
-        del:             del
+        writePost:       writePost,
+        deletePost:      deletePost
     };
 
 
