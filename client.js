@@ -9,6 +9,7 @@
     var _timelineJ  = 'timeline.json';
     var _post       = 'post';
     var _profile    = 'profile';
+    var _lh_auth_key = 'ITTER_AUTH';
 
     var no_op = function() {};
 
@@ -54,13 +55,29 @@
         return AUTH.user;
     };
 
+    var attemptLogIn = function() {
+        try {
+            var a = localStorage.getItem(_lh_auth_key)
+            this.logIn(a.user, a.secret);
+            return true;
+        } catch (ex) {
+            return false;
+        }
+    }
+
     var logIn = function(user, secret) {
         AUTH.user   = user;
         AUTH.secret = secret;
+        try {
+            localStorage.setItem(_lh_auth_key, JSON.stringify(AUTH));
+        } catch (ex) {}
     };
 
-    var logOut = function() {
+    var logOut = function(clear_storage) {
         AUTH = {};
+        if (clear_storage) {
+            localStorage.removeItem(_lh_auth_key);
+        }
     };
 
     var getFollowing = function(user, cb) {
@@ -164,6 +181,7 @@
     win.itter = {
         amILoggedIn:     amILoggedIn,
         getMyUser:       getMyUser,
+        attemptLogIn:    attemptLogIn,
         logIn:           logIn,
         logOut:          logOut,
         getOwnFollowing: getOwnFollowing,
