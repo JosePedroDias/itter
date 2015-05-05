@@ -6,6 +6,12 @@
         <title>itter widget</title>
 
         <link type="text/css" rel="stylesheet" href="ux.css"/>
+
+        <style type="text/css">
+            #ctn2, #ctn3, #ctn4 {
+                margin-top: 1em;
+            }
+        </style>
     </head>
 
     <body>
@@ -19,6 +25,7 @@
 
         <script type="application/javascript">
             var u1 = 'http://127.0.0.1:9999/user1';
+            var p1 = 'http://127.0.0.1:9999/user1/post.json?created_at=';
             iux.renderProfile(u1, '#ctn1');
             iux.renderPost(u1, '#ctn2');
             iux.renderTimeline(u1, '#ctn3');

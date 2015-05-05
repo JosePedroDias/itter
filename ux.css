@@ -9,15 +9,16 @@ html {
 .itter {
     font-family: sans-serif;
     color: #222;
-}
-
-.itter-profile {
     display: block;
     border: 1px solid #888;
     background-color: #DDD;
     max-width: 30em;
     padding: 0.5em;
     position: relative;
+}
+
+.itter-profile {
+    text-decoration: none;
 }
 
 .itter-profile .avatar {
@@ -37,6 +38,11 @@ html {
     font-size: 16px;
 }
 
-.itter-profile .desc {
+.itter-profile .name {
+    font-weight: bold;
+}
+
+.itter-profile .description {
     margin-top: 0.5em;
+    font-style: italic;
 }
