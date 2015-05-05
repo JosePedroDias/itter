@@ -6,8 +6,10 @@
     * request more posts
     
 * ux
-    * login/logout with localStorage
-    * post
-    * show posts
-    * show timeline
-    * show profile
+    * do HTML views
+        * renderProfile
+        * renderPost
+        * renderTimeline
+        * postForm
+    * integrate views with client
+    * do integrated widget

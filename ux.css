@@ -1,0 +1,42 @@
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+.itter {
+    font-family: sans-serif;
+    color: #222;
+}
+
+.itter-profile {
+    display: block;
+    border: 1px solid #888;
+    background-color: #DDD;
+    max-width: 30em;
+    padding: 0.5em;
+    position: relative;
+}
+
+.itter-profile .avatar {
+    width:  64px;
+    height: 64px;
+    background-position: center center;
+    background-repeat: no-repeat no-repeat;
+    background-size: cover;
+}
+
+.itter-profile .avatar-rest {
+    position: absolute;
+    left: calc(1em + 64px);
+    top:  0.5em;
+    width: calc(100% - 64px - 1.5em);
+    line-height: 32px;
+    font-size: 16px;
+}
+
+.itter-profile .desc {
+    margin-top: 0.5em;
+}

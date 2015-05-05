@@ -3,11 +3,26 @@
     <head lang="en">
         <meta charset="UTF-8">
 
-        <title>itter</title>
+        <title>itter widget</title>
+
+        <link type="text/css" rel="stylesheet" href="ux.css"/>
     </head>
 
     <body>
         <script type="application/javascript" src="client.js"></script>
         <script type="application/javascript" src="ux.js"></script>
+
+        <div id="ctn1"></div>
+        <div id="ctn2"></div>
+        <div id="ctn3"></div>
+        <div id="ctn4"></div>
+
+        <script type="application/javascript">
+            var u1 = 'http://127.0.0.1:9999/user1';
+            iux.renderProfile(u1, '#ctn1');
+            iux.renderPost(u1, '#ctn2');
+            iux.renderTimeline(u1, '#ctn3');
+            iux.postForm(u1, '#ctn4');
+        </script>
     </body>
 </html>
