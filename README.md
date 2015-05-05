@@ -74,22 +74,22 @@ Currently having everything in the same repos makes evolving easier.
 
 # DISCUSSION TOPICS
 
-* who builds each timeline?
+* **who builds each timeline?**
     * the server can do it (available now)
     * the client can too
     
-* how to reduce traffic and complexity on updates?
-    * if we assume each user's `posts.json` endpoint to be **append-only**,
+* **how to reduce traffic and complexity on updates?**
+    * if we assume each user's `posts.json` endpoint to be _append-only_,
      one can track the response length and in the following refresh request using byte-range header.
      
-* how to track followers?
+* **how to track followers?**
     * so far I'm not even attempting since there's no obvious solution to do so
     * requests for posts could arrive with header telling who's requesting, but this is voluntary/tentative
 
-* how to track favourites?
+* **how to track favourites?**
     * I'm not (can I? should I?)
 
-* RT mechanism
+* **RT mechanism**
     * a RT may be just a regular post with a field `original`, pointing out to the original post
 
 
