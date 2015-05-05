@@ -22,7 +22,7 @@ search isn't part of the solution (not yet at least. you know Twitter just searc
 no followers inward arcs (because we just can't measure that)
 
 
-# DRAFT
+# PRINCIPLES AND EXAMPLE API CALLS
 
 any server can serve one or more itter users
 
@@ -41,15 +41,16 @@ public endpoints should support ranged requests
 	    /new?secret=my_secret
 	    
 		
-		PUBLIC ENDPOINTS
+		PUBLIC ENDPOINTS (return JSON)
 		
 		/profile.json
 		/posts.json
 		/timeline.json
 		/following.json
+		/post.json?created_at=1430755086024 TODO
 
 
-		REQUIRES AUTH (secret string in query string)
+		REQUIRES AUTH (secret string in query string; return text such as OK or the error description)
 
 		/post?content=hello%20world
 		/delete?post_created_at=1430755086024
@@ -57,6 +58,39 @@ public endpoints should support ranged requests
 		/unfollow?target_user=http%3A%2F%2F127.0.0.1%3A9999%2Fuser
 		/profile?name=User%203&description=things%20and%20stuff
 		/secret?new_secret=my_new_secret
+
+
+# PROJECT STRUCTURE
+
+As you can see, this is a melting pot of everything.  
+If this becomes consistent/useful I promise to refactor/divide things.  
+Currently having everything in the same repos makes evolving easier. 
+
+* server implementation in node.js - `serve.js`
+* client implementation for browsers in JS - `client.js`
+* browser widget (not working yet) - `ux.html` and `ux.js`
+* example data for the server implementation - `secrets.json` and files in user folders
+
+
+# DISCUSSION TOPICS
+
+* who builds each timeline?
+    * the server can do it (available now)
+    * the client can too
+    
+* how to reduce traffic and complexity on updates?
+    * if we assume each user's `posts.json` endpoint to be **append-only**,
+     one can track the response length and in the following refresh request using byte-range header.
+     
+* how to track followers?
+    * so far I'm not even attempting since there's no obvious solution to do so
+    * requests for posts could arrive with header telling who's requesting, but this is voluntary/tentative
+
+* how to track favourites?
+    * I'm not (can I? should I?)
+
+* RT mechanism
+    * a RT may be just a regular post with a field `original`, pointing out to the original post
 
 
 ## TEST MESSY DRAFT
