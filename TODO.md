@@ -1,5 +1,4 @@
 * serve
-    * endpoint `/post.json?created_at=1430755086024`
     * partial timeline update
     
 * client

@@ -47,7 +47,7 @@ public endpoints should support ranged requests
 		/posts.json
 		/timeline.json
 		/following.json
-		/post.json?created_at=1430755086024 TODO
+		/post.json?created_at=1430755086024
 
 
 		REQUIRES AUTH (secret string in query string; return text such as OK or the error description)

@@ -18,6 +18,7 @@ var _secretsJ   = 'secrets.json';
 var _profileJ   = 'profile.json';
 var _followingJ = 'following.json';
 var _postsJ     = 'posts.json';
+var _postJ      = 'post.json';
 var _timelineJ  = 'timeline.json';
 
 var _profile    = 'profile';
@@ -28,7 +29,7 @@ var _unfollow   = 'unfollow';
 var _new        = 'new';
 var _secret     = 'secret';
 
-var _PUBLIC_THENS    = [_profileJ, _followingJ, _postsJ, _timelineJ];
+var _PUBLIC_THENS    = [_profileJ, _followingJ, _postsJ, _postJ, _timelineJ];
 var _PROTECTED_THENS = [_post, _delete, _follow, _unfollow, _profile, _new, _secret];
 var _ALL_THENS       = _PUBLIC_THENS.concat(_PROTECTED_THENS);
 
@@ -141,6 +142,18 @@ var fullTimeline = function(user, res) {
     });
 };
 
+var post = function(user, created_at, res) {
+    var arrS = CACHE[user][_postsJ];
+    var arr = JSON.parse(arrS);
+    for (var i = 0, I = arr.length, it; i < I; ++i) {
+        it = arr[i];
+        if (it['created_at'] === created_at) {
+            return go(res, JSON.stringify(it));
+        }
+    }
+    go(res, 'POST NOT FOUND', 404);
+};
+
 
 // setting up secrets and cache
 (function() {
@@ -171,6 +184,13 @@ var s = http.createServer(function(req, res) {
 		search = u.substring(ii + 1);
 		then = u.substring(i + 1, ii);
 	}
+    var params = {};
+    search.split('&').forEach(function(pair) {
+        pair = pair.split('=');
+        params[pair[0]] = decodeURIComponent(pair[1]);
+    });
+    //console.log(params);
+
 	//console.log( JSON.stringify( [user, then, search] ) );
 
 	if (user === '/' || (!(user in CACHE) && then !== _new) || !elInArr(then, _ALL_THENS)) { // invalid
@@ -181,16 +201,21 @@ var s = http.createServer(function(req, res) {
         if (then === _timelineJ) {
             return fullTimeline(user, res);
         }
+        else if (then === _postJ) {
+            try {
+                if ('created_at' in params) {
+                    params['created_at'] = parseInt(params['created_at'], 10);
+                    return post(user, params['created_at'], res);
+                }
+                else { throw 'FIELDS MISSING: created_at'; }
+            }
+            catch (err) {
+                return go(res, err, 412);
+            }
+        }
 		var o = CACHE[user][then];
 		return go(res, o);
 	}
-
-	var params = {}; // post or delete
-	search.split('&').forEach(function(pair) {
-		pair = pair.split('=');
-		params[pair[0]] = decodeURIComponent(pair[1]);
-	});
-	//console.log(params);
 
     if (then === _new && SECRETS[user]) {
         return go(res, 'UNAUTHORIZED ACCESS: user already exists', 403);
