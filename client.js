@@ -99,9 +99,19 @@
         });
     };
 
+    // supports signatures:
+    //   postUrl, cb
+    //   user, created_at, cb
     var getPost = function(user, created_at, cb) {
+        var uri = user;
+        if (uri.indexOf('?') !== -1) {
+            cb = created_at;
+        }
+        else {
+            uri =  user + '/' + _postJ + '?created_at=' + created_at;
+        }
         ajax({
-            uri: user + '/' + _postJ + '?created_at=' + created_at,
+            uri: uri,
             cb:  cb
         });
     };
@@ -178,6 +188,11 @@
         });
     };
 
+    var userRgx = /(https?:\/\/)?([^ \/]+)/;
+    var getUserFromUrl = function(url) {
+        return userRgx.exec(url)[2];
+    };
+
     win.itter = {
         amILoggedIn:     amILoggedIn,
         getMyUser:       getMyUser,
@@ -197,7 +212,8 @@
         getProfile:      getProfile,
         setProfile:      setProfile,
         writePost:       writePost,
-        deletePost:      deletePost
+        deletePost:      deletePost,
+        getUserFromUrl:  getUserFromUrl
     };
 
 
