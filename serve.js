@@ -90,7 +90,7 @@ var appendToArray = function(arrS, o) {
 
 var ghr = /(https?:\/\/)?([^ \/]+)/;
 var getHost = function(url, headers) {
-    return headers.host ? headers.host : ghr.exec(url)[2];
+    return headers.host || ghr.exec(url)[2];
 };
 
 //DESC

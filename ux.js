@@ -21,7 +21,7 @@
             </a>*/},
         post: function() {/*
             <a class="itter itter-post" href="{{url}}" target="_blank">
-                {{created_at}},
+                {{created_at_h}},
                 {{content}}
             </a>*/},
         timeline: function() {/*
@@ -73,6 +73,41 @@
         return (ctx || document).querySelector(sel);
     };
 
+    var zeroPad = function(n) {
+        return n < 10 ? '0'+n : n;
+    };
+
+    var _dows = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' ');
+    var _months = 'January February March April May June July August September October November December'.split(' ');
+
+    var nth = function(n) {
+        if (n === 1) { return 'st'; }
+        if (n === 2) { return 'nd'; }
+        if (n === 3) { return 'rd'; }
+        return 'th';
+    };
+
+    var humanTS = function(ts) {
+        //console.log(ts, typeof ts);
+        var d = new Date(ts);
+        return [
+            _dows[ d.getDay() ],
+            ', ',
+            _months[ d.getMonth() ],
+            ' the ',
+            d.getDate(),
+            nth( d.getDate() ),
+            ' of ',
+
+            ' ',
+            d.getFullYear(),
+            ' at ',
+            d.getHours(),
+            ':',
+            zeroPad( d.getMinutes() )
+        ].join('');
+    };
+
 
 
     // TODO TEMP
@@ -101,6 +136,7 @@
 
     var _renderPost = function(post, sel, mode) {
         post.user = profile; // TODO
+        post.created_at_h = humanTS(post.created_at);
         applyTpl('post', post, mode || 'innerHTML', sel);
     };
 
