@@ -88,8 +88,9 @@ var appendToArray = function(arrS, o) {
     return [ (l>2? objS.substring(0, l-1) + ',' : '{') , kS, ':', vS, '}'].join('');
 };*/
 
+var ghr = /(https?:\/\/)?([^ \/]+)/;
 var getHost = function(url, headers) {
-    return (headers.host ? headers.host : url.substring(0, url.indexOf('/')));
+    return headers.host ? headers.host : ghr.exec(url)[2];
 };
 
 //DESC

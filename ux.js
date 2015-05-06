@@ -30,6 +30,7 @@
         form: function() {/*
             <div class="itter itter-form">
                 <textarea class="content"></textarea>
+                <button class="send-post">post</button>
             </div>*/}
     };
 
@@ -67,7 +68,8 @@
         }
     };
 
-    var qs = function(sel, ctx) {
+    var qs = function qs(sel, ctx) {
+        if (typeof ctx === 'string') { ctx = qs(ctx); }
         return (ctx || document).querySelector(sel);
     };
 
@@ -97,24 +99,32 @@
         applyTpl('profile', profile, 'innerHTML', sel);
     };
 
-    var renderPost = function(post_url, sel) {
-        // TODO FETCH POST
-        // TODO FETCH USER FROM CACHE
-        post.url = post_url;
+    var _renderPost = function(post, sel, mode) {
         post.user = profile; // TODO
-        applyTpl('post', post, 'innerHTML', sel);
+        applyTpl('post', post, mode || 'innerHTML', sel);
+    };
+
+    var renderPost = function(post_or_post_url, sel) {
+        var _post = (typeof post_or_post_url === 'string') ? post : post_or_post_url; // TODO FETCH POST
+        _post.user = profile; // TODO FETCH USER FROM CACHE
+        _renderPost(_post, sel);
     };
 
     var renderTimeline = function(user, sel) {
         applyTpl('timeline', timeline, 'innerHTML', sel);
         var timelineEl = qs('.itter-timeline', sel);
         timeline.forEach(function(post) {
-            //this.render
+            _renderPost(post, timelineEl, 'beforeend');
         });
     };
 
     var postForm = function(user, sel) {
         applyTpl('form', {}, 'innerHTML', sel);
+        var taEl     = qs('textarea', sel);
+        var buttonEl = qs('button', sel);
+        buttonEl.addEventListener('click', function() {
+            console.log(taEl.value);
+        });
     };
 
 
