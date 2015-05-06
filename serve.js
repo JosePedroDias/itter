@@ -88,6 +88,10 @@ var appendToArray = function(arrS, o) {
     return [ (l>2? objS.substring(0, l-1) + ',' : '{') , kS, ':', vS, '}'].join('');
 };*/
 
+var getHost = function(url, headers) {
+    return (headers.host ? headers.host : url.substring(0, url.indexOf('/')));
+};
+
 //DESC
 var byCreatedAt = function(o1, o2) { return o1['created_at'] < o2['created_at']; };
 
@@ -172,8 +176,8 @@ var post = function(user, created_at, res) {
 
 // main loop
 var s = http.createServer(function(req, res) {
-    var host = 'http://' + req.headers.host;
-	var u = req.url;
+    var u = req.url;
+    var host = 'http://' + getHost(u, req.headers);
 	console.log('\n' + u);
 	var i = u.indexOf('/', 1);
 	var user = u.substring(1, i);
