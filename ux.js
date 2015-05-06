@@ -8,6 +8,8 @@
             .replace(/\*\/[^\/]+$/,   '');
     };
 
+    var default_avatar = 'http://www.pissedconsumer.com/images/avatars/avatar-default-128.png';
+
     var tpls = {
         profile: function() {/*
             <a class="itter itter-profile" href="{{user}}/profile.json" target="_blank">
@@ -20,17 +22,36 @@
                 <div class="languages">{{languages}}</div>
             </a>*/},
         post: function() {/*
-            <a class="itter itter-post" href="{{url}}" target="_blank">
-                {{created_at_h}},
-                {{content}}
-            </a>*/},
-        timeline: function() {/*
-            <div class="itter itter-timeline">
+            <div class="itter itter-post">
+                <a class="profile" href="{{u_user}}/profile.json" target="_blank">
+                    <div class="avatar" style="background-image: url('{{u_avatar}}')"></div>
+                    <div class="name">{{u_name}}</div>
+                </a>
+                <a class="profile-rest" href="{{url}}" target="_blank">
+                    <i>{{created_at_h}}</i><br/>
+                    {{content}}
+                </a>
             </div>*/},
+        timeline: function() {/*
+            <div class="itter itter-timeline"></div>*/},
         form: function() {/*
             <div class="itter itter-form">
-                <textarea class="content"></textarea>
-                <button class="send-post">post</button>
+                <div class="login-ctn">
+                    <div>
+                        <label>user</label>
+                        <input class="user" type="text" value="">
+                    </div>
+                    <div>
+                        <label>secret</label>
+                        <input class="secret" type="password" value="">
+                    </div>
+                    <button class="log-in">login</button>
+                </div>
+                <div class="compose-ctn">
+                    <textarea class="content"></textarea>
+                    <button class="send-post">post</button>
+                    <button class="log-out">logout</button>
+                </div>
             </div>*/}
     };
 
@@ -45,7 +66,7 @@
     };
 
     /**
-     * modes: [before|after][begin|end] or innerHTML(default)
+     * modes: [before|after][begin|end], outerHTML or innerHTML(default)
      */
     var applyTpl = function(tplName, model, mode, el, ctx) {
         el = qs(el, ctx);
@@ -58,6 +79,10 @@
             case 'innerHTML':
             case undefined:
                 el.innerHTML = tpl;
+                break;
+
+            case 'outerHTML':
+                el.outerHTML = tpl;
                 break;
 
             case 'beforebegin':
@@ -97,8 +122,6 @@
             d.getDate(),
             nth( d.getDate() ),
             ' of ',
-
-            ' ',
             d.getFullYear(),
             ' at ',
             d.getHours(),
@@ -113,14 +136,21 @@
         win.itter.getProfile(user_url, function(err, profile) {
             if (err) { return console.error(err); }
             profile.user = user_url;
+            if (!profile.avatar) { profile.avatar = default_avatar; }
             applyTpl('profile', profile, 'innerHTML', sel);
         });
     };
 
     var _renderPost = function(post, sel, mode) {
-        //post.user = profile; // TODO
-        post.created_at_h = humanTS(post.created_at);
-        applyTpl('post', post, mode || 'innerHTML', sel);
+        var user_url = win.itter.getUserFromUrl(post.url);
+        win.itter.getProfile(user_url, function(err, profile) {
+            if (err) { return console.error(err); }
+            post.u_user = user_url;
+            post.u_name = profile.name || '';
+            post.u_avatar = profile.avatar || default_avatar;
+            post.created_at_h = humanTS(post.created_at);
+            applyTpl('post', post, mode || 'innerHTML', sel);
+        });
     };
 
     var renderPost = function(post_or_post_url, sel) {
@@ -139,17 +169,47 @@
             applyTpl('timeline', timeline, 'innerHTML', sel);
             var timelineEl = qs('.itter-timeline', sel);
             timeline.forEach(function(post) {
-                _renderPost(post, timelineEl, 'beforeend');
+                var proxyEl = document.createElement('div'); // to ensure posts order doesn't get messed up by async requests
+                timelineEl.appendChild(proxyEl);
+                _renderPost(post, proxyEl, 'outerHTML');
             });
         });
     };
 
     var postForm = function(sel) {
+        win.itter.attemptLogIn();
+
         applyTpl('form', {}, 'innerHTML', sel);
-        var taEl     = qs('textarea', sel);
-        var buttonEl = qs('button', sel);
-        buttonEl.addEventListener('click', function() {
-            console.log(taEl.value);
+        var formEl = qs('.itter-form', sel);
+        formEl.classList.add( win.itter.amILoggedIn() ? 'at-compose' : 'at-login' );
+
+        var userEl        = qs('.user',      formEl);
+        var secretEl      = qs('.secret',    formEl);
+        var contentEl     = qs('.content',   formEl);
+        var logInEl       = qs('.log-in',    formEl);
+        var logOutEl      = qs('.log-out',   formEl);
+        var sendPostEll   = qs('.send-post', formEl);
+
+        var toggleAt = function() {
+            formEl.classList.toggle('at-login');
+            formEl.classList.toggle('at-compose');
+        };
+
+        logInEl.addEventListener('click', function() {
+            win.itter.logIn(userEl.value, secretEl.value);
+            toggleAt();
+        });
+        logOutEl.addEventListener('click', function() {
+            userEl.value = '';
+            secretEl.value = '';
+            win.itter.logOut(true);
+            toggleAt();
+        });
+        sendPostEll.addEventListener('click', function() {
+            win.itter.writePost({content:contentEl.value}, function(err) {
+                if (!err) { contentEl.value = ''; }
+                window.alert(err || 'OK!');
+            });
         });
     };
 

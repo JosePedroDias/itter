@@ -56,14 +56,15 @@
     };
 
     var attemptLogIn = function() {
+        if (this.amILoggedIn()) { return true; }
         try {
-            var a = localStorage.getItem(_lh_auth_key)
+            var a = JSON.parse( localStorage.getItem(_lh_auth_key) );
             this.logIn(a.user, a.secret);
             return true;
         } catch (ex) {
             return false;
         }
-    }
+    };
 
     var logIn = function(user, secret) {
         AUTH.user   = user;
@@ -188,9 +189,9 @@
         });
     };
 
-    var userRgx = /(https?:\/\/)?([^ \/]+)/;
+    var userRgx = /(https?:\/\/?[^ \/]+\/?[^ \/]+)/;
     var getUserFromUrl = function(url) {
-        return userRgx.exec(url)[2];
+        return userRgx.exec(url)[1];
     };
 
     win.itter = {
@@ -217,14 +218,13 @@
     };
 
 
-
-    // TODO TEMP
-    window.i = win.itter;
-    win.log = function() { console.log(arguments); };
-    win.log2 = function(err, o) { if (err) { return console.error(err); } console.log(o); };
-    i.logIn('http://127.0.0.1:9999/user1', 'pass1');
-
     /*
+        // TODO TEMP
+        window.i = win.itter;
+        win.log = function() { console.log(arguments); };
+        win.log2 = function(err, o) { if (err) { return console.error(err); } console.log(o); };
+        i.logIn('http://127.0.0.1:9999/user1', 'pass1');
+
         i.getOwnPosts(log2);
         i.getOwnFollowing(log2);
         i.post({content:'hello world'});

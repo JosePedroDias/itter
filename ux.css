@@ -15,6 +15,13 @@ html {
     max-width: 30em;
     padding: 0.5em;
     position: relative;
+    text-decoration: none;
+}
+
+.itter label {
+    display: inline-block;
+    font-weight: bold;
+    width: 4em;
 }
 
 .itter button {
@@ -24,11 +31,8 @@ html {
     padding: 0.33em 0.66em;
 }
 
-.itter-profile {
-    text-decoration: none;
-}
-
-.itter-profile .avatar {
+.itter-profile .avatar,
+.itter-post .avatar {
     width:  64px;
     height: 64px;
     background-position: center center;
@@ -52,6 +56,34 @@ html {
 .itter-profile .description {
     margin-top: 0.5em;
     font-style: italic;
+}
+
+.itter-post {
+    min-height: 120px;
+}
+
+.itter-form.at-login .compose-ctn {
+    display: none;
+}
+
+.iter-form.at-compose .login-ctn {
+    display: none;
+}
+
+.itter-post .profile {
+    display: block;
+    text-decoration: none;
+    color: #222;
+    position: absolute;
+    left: 0.5em;
+    top:  0.5em;
+}
+
+.itter-post .profile-rest {
+    display: block;
+    text-decoration: none;
+    color: #222;
+    margin-left: 100px;
 }
 
 .itter-form textarea {
