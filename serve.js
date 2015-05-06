@@ -124,12 +124,12 @@ var fullTimeline = function(user, res) {
     var items = [];
     followings.forEach(function(following) {
         request(following + '/posts.json', function(err, resp, body) {
-            var user = resp.request.href;
-            user = user.substring(0, user.length - 11);
+            //var user = resp.request.href;
+            //user = user.substring(0, user.length - 11);
             //console.log('**', resp.request.href);
             if (!err) {
                 var theseItems = JSON.parse(body);
-                theseItems.forEach(function(it) { it.from = user; }); // fill items with user param
+                //theseItems.forEach(function(it) { it.from = user; }); // fill items with user param
                 items = items.concat(theseItems);
             }
             --followingsLeft;
@@ -172,9 +172,9 @@ var post = function(user, created_at, res) {
 
 // main loop
 var s = http.createServer(function(req, res) {
+    var host = 'http://' + req.headers.host;
 	var u = req.url;
 	console.log('\n' + u);
-
 	var i = u.indexOf('/', 1);
 	var user = u.substring(1, i);
 	var then = u.substring(i + 1);
@@ -244,6 +244,7 @@ var s = http.createServer(function(req, res) {
         }
 		else if (then === _post) {
 			params.created_at = Date.now();
+            params.url = [host, '/', user, '/post.json?created_at=', params.created_at].join('');
 			if ('content' in params) {
                 appendToCacheProperty(user, _postsJ, params);
 			}

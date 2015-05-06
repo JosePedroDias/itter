@@ -20,13 +20,16 @@
                 <div class="languages">{{languages}}</div>
             </a>*/},
         post: function() {/*
-            <a class="itter itter-post" href="{{user}}" target="_blank">
+            <a class="itter itter-post" href="{{url}}" target="_blank">
+                {{created_at}},
+                {{content}}
             </a>*/},
         timeline: function() {/*
-            <a class="itter itter-timeline" href="{{url}}" target="_blank">
-            </a>*/},
+            <div class="itter itter-timeline">
+            </div>*/},
         form: function() {/*
             <div class="itter itter-form">
+                <textarea class="content"></textarea>
             </div>*/}
     };
 
@@ -34,7 +37,10 @@
         tpls[k] = fetchFnComment( tpls[k] );
     }
 
-    var applyTpl = function(tplName, model, el, ctx) {
+    /**
+     * modes: [before|after][begin|end] or innerHTML(default)
+     */
+    var applyTpl = function(tplName, model, mode, el, ctx) {
         if (typeof el === 'string') {
             el = (ctx || document).querySelector(el);
         }
@@ -42,7 +48,27 @@
         for (var k in model) {
             tpl = tpl.replace( new RegExp('({{'+k+'}})', 'g'), model[k] );
         }
-        el.innerHTML = tpl;
+
+        switch (mode) {
+            case 'innerHTML':
+            case undefined:
+                el.innerHTML = tpl;
+                break;
+
+            case 'beforebegin':
+            case 'afterbegin':
+            case 'beforeend':
+            case 'afterend':
+                el.insertAdjacentHTML(mode, tpl);
+                break;
+
+            default:
+                throw 'Unsupported mode: "' + mode + '"!';
+        }
+    };
+
+    var qs = function(sel, ctx) {
+        return (ctx || document).querySelector(sel);
     };
 
 
@@ -54,24 +80,41 @@
         "languages":   "en,pt",
         "description": "lorem ipsum"
     };
-    var post = {};
-    var timeline = [];
+    var post = {
+        "content":    "meu terceiro",
+        "created_at": 1430909390633,
+        "url":        "http://127.0.0.1:9999/user2/post.json?created_at=1430909390633"
+    };
+    var timeline = [
+        {"content":"my first",    "created_at":1430761590645,"url":"http://127.0.0.1:9999/user3/post.json?created_at=1430761590645"},
+        {"content":"meu primeiro","created_at":1430761612910,"url":"http://127.0.0.1:9999/user2/post.json?created_at=1430761612910"},
+        {"content":"meu segundo", "created_at":1430761618310,"url":"http://127.0.0.1:9999/user2/post.json?created_at=1430761618310"},
+        {"content":"meu terceiro","created_at":1430909390633,"url":"http://127.0.0.1:9999/user2/post.json?created_at=1430909390633"}
+    ];
 
     var renderProfile = function(user, sel) {
-        profile.user = user;
-        applyTpl('profile', profile, sel);
+        profile.user = user; // TODO FETCH USER AND STORE IN CACHE
+        applyTpl('profile', profile, 'innerHTML', sel);
     };
 
     var renderPost = function(post_url, sel) {
-        applyTpl('post', post, sel);
+        // TODO FETCH POST
+        // TODO FETCH USER FROM CACHE
+        post.url = post_url;
+        post.user = profile; // TODO
+        applyTpl('post', post, 'innerHTML', sel);
     };
 
     var renderTimeline = function(user, sel) {
-        applyTpl('timeline', timeline, sel);
+        applyTpl('timeline', timeline, 'innerHTML', sel);
+        var timelineEl = qs('.itter-timeline', sel);
+        timeline.forEach(function(post) {
+            //this.render
+        });
     };
 
     var postForm = function(user, sel) {
-        applyTpl('form', {}, sel);
+        applyTpl('form', {}, 'innerHTML', sel);
     };
 
 

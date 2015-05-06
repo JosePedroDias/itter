@@ -1,4 +1,5 @@
 * serve
+    * make endpoint return always json, 200 and relevant data in the response
     * partial timeline update
     
 * client
